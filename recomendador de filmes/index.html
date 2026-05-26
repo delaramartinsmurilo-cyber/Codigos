@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Recomendador de Filmes</title>
+
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body{
+      background:#121212;
+      color:#fff;
+      padding:30px;
+    }
+
+    .container{
+      max-width:1000px;
+      margin:auto;
+    }
+
+    h1{
+      text-align:center;
+      margin-bottom:30px;
+      color:#ffcc00;
+    }
+
+    .filtros{
+      background:#1f1f1f;
+      padding:20px;
+      border-radius:10px;
+      margin-bottom:30px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:20px;
+      align-items:end;
+    }
+
+    .campo{
+      display:flex;
+      flex-direction:column;
+      flex:1;
+      min-width:200px;
+    }
+
+    label{
+      margin-bottom:8px;
+      font-weight:bold;
+    }
+
+    input, select{
+      padding:10px;
+      border:none;
+      border-radius:6px;
+      font-size:16px;
+    }
+
+    button{
+      padding:12px 20px;
+      background:#ffcc00;
+      border:none;
+      border-radius:6px;
+      cursor:pointer;
+      font-size:16px;
+      font-weight:bold;
+      transition:0.3s;
+    }
+
+    button:hover{
+      background:#e6b800;
+    }
+
+    .erro{
+      color:#ff5c5c;
+      margin-top:10px;
+      font-size:14px;
+    }
+
+    .filmes{
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+      gap:20px;
+    }
+
+    .card{
+      background:#1f1f1f;
+      border-radius:10px;
+      padding:20px;
+      transition:0.3s;
+    }
+
+    .card:hover{
+      transform:translateY(-5px);
+    }
+
+    .card h3{
+      color:#ffcc00;
+      margin-bottom:10px;
+    }
+
+    .card p{
+      margin-bottom:5px;
+    }
+
+    .sem-resultados{
+      text-align:center;
+      margin-top:20px;
+      color:#ccc;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <h1>🎬 Recomendador de Filmes</h1>
+
+    <div class="filtros">
+
+      <div class="campo">
+        <label for="ano">Ano</label>
+        <input type="number" id="ano" placeholder="Ex: 2020">
+      </div>
+
+      <div class="campo">
+        <label for="genero">Gênero</label>
+        <select id="genero">
+          <option value="">Selecione</option>
+          <option value="Ação">Ação</option>
+          <option value="Comédia">Comédia</option>
+          <option value="Drama">Drama</option>
+          <option value="Ficção">Ficção</option>
+          <option value="Terror">Terror</option>
+        </select>
+      </div>
+
+      <button onclick="filtrarFilmes()">
+        Buscar
+      </button>
+
+    </div>
+
+    <div id="erro" class="erro"></div>
+
+    <div class="filmes" id="listaFilmes"></div>
+
+  </div>
+
+  <script>
+
+    const filmes = [
+      {
+        titulo: "Interestelar",
+        ano: 2014,
+        genero: "Ficção"
+      },
+      {
+        titulo: "Vingadores: Ultimato",
+        ano: 2019,
+        genero: "Ação"
+      },
+      {
+        titulo: "Corra!",
+        ano: 2017,
+        genero: "Terror"
+      },
+      {
+        titulo: "O Máskara",
+        ano: 1994,
+        genero: "Comédia"
+      },
+      {
+        titulo: "Clube da Luta",
+        ano: 1999,
+        genero: "Drama"
+      },
+      {
+        titulo: "Duna",
+        ano: 2021,
+        genero: "Ficção"
+      }
+    ];
+
+    const listaFilmes = document.getElementById("listaFilmes");
+    const erro = document.getElementById("erro");
+
+    function mostrarFilmes(lista){
+      listaFilmes.innerHTML = "";
+
+      if(lista.length === 0){
+        listaFilmes.innerHTML = `
+          <p class="sem-resultados">
+            Nenhum filme encontrado.
+          </p>
+        `;
+        return;
+      }
+
+      lista.forEach(filme => {
+        listaFilmes.innerHTML += `
+          <div class="card">
+            <h3>${filme.titulo}</h3>
+            <p><strong>Ano:</strong> ${filme.ano}</p>
+            <p><strong>Gênero:</strong> ${filme.genero}</p>
+          </div>
+        `;
+      });
+    }
+
+    function filtrarFilmes(){
+
+      erro.innerHTML = "";
+
+      const ano = document.getElementById("ano").value;
+      const genero = document.getElementById("genero").value;
+
+      // ===== VALIDAÇÕES =====
+
+      // validação do ano
+      if(ano !== ""){
+        if(isNaN(ano)){
+          erro.innerHTML = "O ano deve ser numérico.";
+          return;
+        }
+
+        if(ano < 1900 || ano > 2026){
+          erro.innerHTML = "Digite um ano válido entre 1900 e 2026.";
+          return;
+        }
+      }
+
+      // validação do gênero
+      if(genero === ""){
+        erro.innerHTML = "Selecione um gênero.";
+        return;
+      }
+
+      // ===== FILTRO =====
+
+      const resultado = filmes.filter(filme => {
+
+        const mesmoGenero = filme.genero === genero;
+
+        const mesmoAno = ano === "" || filme.ano == ano;
+
+        return mesmoGenero && mesmoAno;
+      });
+
+      mostrarFilmes(resultado);
+    }
+
+    // mostrar todos inicialmente
+    mostrarFilmes(filmes);
+
+  </script>
+
+</body>
+</html>
